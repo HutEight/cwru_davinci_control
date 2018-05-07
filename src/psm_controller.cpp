@@ -41,7 +41,7 @@ psm_controller::psm_controller(int psm, ros::NodeHandle & nh, bool read_only):
   fresh_joint_state = false;
   first_joint_state = false;
   joint_state_subscriber = nh.subscribe(
-    "/dvrk/PSM" + std::to_string(psm) + "/state_joint_current",
+    "/dvrk/PSM" + std::to_string(psm) + "/joint_states",
     1,
     &psm_controller::pos_cb,
     this);
@@ -92,6 +92,7 @@ bool psm_controller::get_fresh_psm_state(sensor_msgs::JointState & js, double t)
 void psm_controller::move_psm(trajectory_msgs::JointTrajectory & t)
 {
   if (read_only_) return;
+  t.joint_names = dvrk_control::joint_names;
   control_msgs::FollowJointTrajectoryGoal goal;
   goal.trajectory = t;
   action_client.sendGoal(goal);
